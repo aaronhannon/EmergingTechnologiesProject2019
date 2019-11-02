@@ -16,9 +16,9 @@ with gzip.open('mnist_data/t10k-labels-idx1-ubyte.gz', 'rb') as f:
 # print(label_content[8])
             
 #first 16 bytes are headers, 28 x 28 = 784
-_prev_image = 16
-_next_image = 800
-label_index = 8
+#_prev_image = 16
+#_next_image = 800
+#label_index = 8
 # for i in range(20):
 
 #     l = file_content[_prev_image:_next_image]
@@ -73,42 +73,38 @@ outputs = encoder.transform(train_lbl)
 # for i in range(10):
 #     print(i, encoder.transform([i]))
 
-try:
-    print("LOADING.....")
-    model = load_model("model.h5")
-except:
-    print("LOADING FAILED....")
-    model.fit(inputs, outputs, epochs=2, batch_size=100)
-    model.save("model.h5")
+def prediction(image):
+    try:
+        print("LOADING.....")
+        model = load_model("model.h5")
+    except:
+        print("LOADING FAILED....")
+        model.fit(inputs, outputs, epochs=2, batch_size=100)
+        model.save("model.h5")
 
 
-with gzip.open('mnist_data/t10k-images-idx3-ubyte.gz', 'rb') as f:
-    test_img = f.read()
+    with gzip.open('mnist_data/t10k-images-idx3-ubyte.gz', 'rb') as f:
+        test_img = f.read()
 
-with gzip.open('mnist_data/t10k-labels-idx1-ubyte.gz', 'rb') as f:
-    test_lbl = f.read()
-
-
-
-test_img = ~np.array(list(test_img[16:])).reshape(10000, 784).astype(np.uint8) / 255.0
-test_lbl =  np.array(list(test_lbl[ 8:])).astype(np.uint8)
-
-output = model.predict(test_img)
-
-jk = (encoder.inverse_transform(output) == test_lbl).sum()
-
-#print(encoder.inverse_transform(output))
-#print(jk)
-##print(test_lbl[0:5])
-print((encoder.inverse_transform(model.predict(test_img)) == test_lbl).sum())
-
-labelPredict = model.predict(test_img[1:2])
-max = labelPredict.max()
-print(labelPredict.argmax())
+    with gzip.open('mnist_data/t10k-labels-idx1-ubyte.gz', 'rb') as f:
+        test_lbl = f.read()
 
 
-#print("LABEL = " + labelPredict.index(max(labelPredict)))
+
+    test_img = ~np.array(list(test_img[16:])).reshape(10000, 784).astype(np.uint8) / 255.0
+    test_lbl =  np.array(list(test_lbl[ 8:])).astype(np.uint8)
+
+    output = model.predict(test_img)
+
+    #print(encoder.inverse_transform(output))
+    #print(jk)
+    ##print(test_lbl[0:5])
+    #print((encoder.inverse_transform(model.predict(test_img)) == test_lbl).sum())
+
+    
+    labelPredict = model.predict(image)
+    print(labelPredict)
+    
+    return labelPredict.argmax()
 
 
-plt.imshow(test_img[1].reshape(28, 28), cmap='gray')
-plt.show()
