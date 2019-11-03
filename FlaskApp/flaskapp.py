@@ -34,6 +34,8 @@ def getImage():
 
     img = Image.open(BytesIO(decode_Image))
     
+    img.show()
+
     image_np = np.array(img)
 
     pixels = np.resize(image_np, (1, 784))

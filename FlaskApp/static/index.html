@@ -1,10 +1,27 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+    <style>
+        .paint-canvas {
+        border: 1px black solid;
+        display: block;
+        margin: 1rem;
+        }
+
+        .js-color-picker {
+        margin: 1rem 1rem 0 1rem;
+        }
+        </style>
+</head>
+
 <body>
 
     <body onload="init()">
-        <canvas id="can" width="400" height="400" style="position:absolute;top:10%;left:10%;border:2px solid;"></canvas>
-        <img id="canvasimg" style="position:absolute;top:10%;left:52%;" style="display:none;">
+        <input type="color"  class="js-color-picker">
+        <input type="range" class="js-line-range" min="1" max="72" value="1">
+        <label class="js-range-value">1</label>Px
+        <canvas class="js-paint  paint-canvas" width="600" height="300"></canvas>
         <input type="button" value="save" id="predict" size="30" style="position:absolute;top:55%;left:10%;">
         <input type="button" value="clear" id="clr" size="23" onclick="erase()" style="position:absolute;top:55%;left:15%;">
 
@@ -16,59 +33,56 @@
     crossorigin="anonymous">
 </script>
 <script type="text/javascript">
-    var canvas, ctx, flag = false,
-        prevX = 0,
-        currX = 0,
-        prevY = 0,
-        currY = 0,
-        dot_flag = false;
+    const paintCanvas = document.querySelector( '.js-paint' );
+    const context = paintCanvas.getContext( '2d' );
+    context.lineCap = 'round';
 
-    var x = "black",y = 3;
-    
-    function init() {
-        canvas = document.getElementById('can');
-        ctx = canvas.getContext("2d");
-        w = canvas.width;
-        h = canvas.height;
-    
-        canvas.addEventListener("mousemove", function (e) {
-            findxy('move', e)
-        }, false);
-        canvas.addEventListener("mousedown", function (e) {
-            findxy('down', e)
-        }, false);
-        canvas.addEventListener("mouseup", function (e) {
-            findxy('up', e)
-        }, false);
-        canvas.addEventListener("mouseout", function (e) {
-            findxy('out', e)
-        }, false);
+    const colorPicker = document.querySelector( '.js-color-picker');
+
+    colorPicker.addEventListener( 'change', event => {
+        context.strokeStyle = event.target.value; 
+    } );
+
+    const lineWidthRange = document.querySelector( '.js-line-range' );
+    const lineWidthLabel = document.querySelector( '.js-range-value' );
+
+    lineWidthRange.addEventListener( 'input', event => {
+        const width = event.target.value;
+        lineWidthLabel.innerHTML = width;
+        context.lineWidth = width;
+    } );
+
+    let x = 0, y = 0;
+    let isMouseDown = false;
+
+    const stopDrawing = () => { isMouseDown = false; }
+    const startDrawing = event => {
+        isMouseDown = true;   
+    [x, y] = [event.offsetX, event.offsetY];  
     }
-    
-    
-    function draw() {
-        ctx.beginPath();
-        ctx.moveTo(prevX, prevY);
-        ctx.lineTo(currX, currY);
-        ctx.strokeStyle = x;
-        ctx.lineWidth = y;
-        ctx.stroke();
-        ctx.closePath();
-    }
-    
-    function erase() {
-        if (m) {
-            ctx.clearRect(0, 0, w, h);
-            document.getElementById("canvasimg").style.display = "none";
+    const drawLine = event => {
+        if ( isMouseDown ) {
+            const newX = event.offsetX;
+            const newY = event.offsetY;
+            context.beginPath();
+            context.moveTo( x, y );
+            context.lineTo( newX, newY );
+            context.stroke();
+            [x, y] = [newX, newY];
         }
     }
+
+    paintCanvas.addEventListener( 'mousedown', startDrawing );
+    paintCanvas.addEventListener( 'mousemove', drawLine );
+    paintCanvas.addEventListener( 'mouseup', stopDrawing );
+    paintCanvas.addEventListener( 'mouseout', stopDrawing );
 
     var server = "http://127.0.0.1:5000";
     
     $( function() {
 				$( "#predict" ).click(function() {
 					var appdir='/';
-					var send_msg = canvas.toDataURL();
+					var send_msg = paintCanvas.toDataURL();
 					var received_msg = "<p>Result returned</p>";
 					console.log(send_msg);
 					$.ajax({
@@ -84,35 +98,5 @@
 				});
   			});
     
-    function findxy(res, e) {
-        if (res == 'down') {
-            prevX = currX;
-            prevY = currY;
-            currX = e.clientX - canvas.offsetLeft;
-            currY = e.clientY - canvas.offsetTop;
-    
-            flag = true;
-            dot_flag = true;
-            if (dot_flag) {
-                ctx.beginPath();
-                ctx.fillStyle = x;
-                ctx.fillRect(currX, currY, 2, 2);
-                ctx.closePath();
-                dot_flag = false;
-            }
-        }
-        if (res == 'up' || res == "out") {
-            flag = false;
-        }
-        if (res == 'move') {
-            if (flag) {
-                prevX = currX;
-                prevY = currY;
-                currX = e.clientX - canvas.offsetLeft;
-                currY = e.clientY - canvas.offsetTop;
-                draw();
-            }
-        }
-    }
     </script>
 </html>
