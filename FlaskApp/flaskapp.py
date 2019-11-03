@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import re
 import base64
-
+from keras.models import load_model
+import gzip
 import io
 from io import StringIO
 from io import BytesIO
@@ -30,21 +31,60 @@ def getImage():
 
     decode_Image = base64.b64decode(image_data)
 
-    print(decode_Image)
+    decode_Image = ~np.array(list(decode_Image)).astype(np.uint8) / 255.0
+    decode_Image.resize(1,784)
 
-    img = Image.open(BytesIO(decode_Image))
+    # #print(test_img)
+
+    # img = Image.open(BytesIO(decode_Image))
     
-    img.show()
+    # #img.show()
 
-    image_np = np.array(img)
+    # image_np = np.array(img)
 
-    pixels = np.resize(image_np, (1, 784))
+    # pixels = np.resize(image_np, (1, 784)).astype(np.uint8) / 255
 
-    print(pixels)
+    
+    model = load_model("model.h5")
 
-    #image_PIL = Image.open(StringIO(image_b64.decode('base64')))
-    #image_np = np.array(image_PIL)
-    #print('Image received: {}'.format(image_np.shape))
+    labelPredict = model.predict(decode_Image)
+
+    print(labelPredict)
+    print(labelPredict.argmax())
+
+    with gzip.open('mnist_data/t10k-images-idx3-ubyte.gz', 'rb') as f:
+        test_img = f.read()
+
+    with gzip.open('mnist_data/t10k-labels-idx1-ubyte.gz', 'rb') as f:
+        test_lbl = f.read()
+
+
+
+    test_img = ~np.array(list(test_img[16:])).reshape(10000, 784).astype(np.uint8) / 255.0
+    
+
+    output = model.predict(test_img[5:6])
+
+    print(output)
+    print(output.argmax())
+
+    # for row in pixels:
+    #     for elem in row:
+    #         if elem > 127:
+    #             print("0", end=' ')
+    #         else:
+    #             print(".",end=' ')
+    #     print()
+
+
+    #print(pixels)
+
+    # pred = prediction(pixels)
+
+    # print("Prediction: ")
+    # print(pred)
+
+    #test_img = ~np.array(list(decode_Image)).reshape(10000, 784).astype(np.uint8) / 255.0
     
     
     
