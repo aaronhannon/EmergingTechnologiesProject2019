@@ -1,6 +1,9 @@
 import gzip
 import numpy as np
 import keras as kr
+from keras.models import Sequential, load_model
+from keras.layers.core import Dense, Dropout, Activation
+from keras.utils import np_utils
 from keras.models import load_model
 import sklearn.preprocessing as pre
 import matplotlib.pyplot as plt
@@ -41,13 +44,25 @@ with gzip.open('mnist_data/t10k-labels-idx1-ubyte.gz', 'rb') as f:
 
 def build():
     #Start a neural network, building it by layers.
-    model = kr.models.Sequential()
+    #model = kr.models.Sequential()
 
-    # Add a hidden layer with 1000 neurons and an input layer with 784.
-    model.add(kr.layers.Dense(units=600, activation='linear', input_dim=784))
-    model.add(kr.layers.Dense(units=400, activation='relu'))
-    # Add a three neuron output layer.
-    model.add(kr.layers.Dense(units=10, activation='softmax'))
+    # # Add a hidden layer with 1000 neurons and an input layer with 784.
+    # model.add(kr.layers.Dense(units=600, activation='linear', input_dim=784))
+    # model.add(kr.layers.Dense(units=400, activation='relu'))
+    # # Add a three neuron output layer.
+    # model.add(kr.layers.Dense(units=10, activation='softmax'))
+
+    model = Sequential()
+    model.add(Dense(512, input_shape=(784,)))
+    model.add(Activation('relu'))                            
+    model.add(Dropout(0.2))
+
+    model.add(Dense(512))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.2))
+
+    model.add(Dense(10))
+    model.add(Activation('softmax'))
 
     # Build the graph.
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -67,7 +82,8 @@ def build():
     encoder.fit(train_lbl)
     outputs = encoder.transform(train_lbl)
 
-    model.fit(inputs, outputs, epochs=4, batch_size=100)
+    model.fit(inputs, outputs,batch_size=128, epochs=20,verbose=2)
+    #model.fit(inputs, outputs, epochs=4, batch_size=100)
     model.save("model.h5")
 
     return model
