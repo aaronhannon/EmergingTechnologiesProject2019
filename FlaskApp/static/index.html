@@ -21,7 +21,7 @@
         <input type="color"  class="js-color-picker">
         <input type="range" class="js-line-range" min="1" max="72" value="1">
         <label class="js-range-value">1</label>Px
-        <canvas class="js-paint  paint-canvas" width="784" height="784"></canvas>
+        <canvas class="js-paint  paint-canvas" width="28" height="28"></canvas>
         <input type="button" value="save" id="predict" size="30" style="position:absolute;top:55%;left:10%;">
         <input type="button" value="clear" id="clr" size="23" onclick="erase()" style="position:absolute;top:55%;left:15%;">
 
@@ -35,7 +35,7 @@
 <script type="text/javascript">
     const paintCanvas = document.querySelector( '.js-paint' );
     const context = paintCanvas.getContext( '2d' );
-    context.lineCap = 'round';
+    context.lineCap = 'square';
 
     const colorPicker = document.querySelector( '.js-color-picker');
 
@@ -79,6 +79,10 @@
 
     var server = "http://127.0.0.1:5000";
     
+    function erase(){
+        context.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
+    }
+
     $( function() {
 				$( "#predict" ).click(function() {
 					var appdir='/';
