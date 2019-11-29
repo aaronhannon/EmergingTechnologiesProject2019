@@ -7,9 +7,7 @@ from PIL import Image
 import re
 import base64
 from keras.models import load_model
-import gzip
 import io
-import cv2
 from io import BytesIO
 
 app = Flask(__name__)
