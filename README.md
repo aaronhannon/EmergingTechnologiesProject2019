@@ -34,7 +34,11 @@ from keras.models import load_model
 import sklearn.preprocessing as pre
 import matplotlib.pyplot as plt
 ```
-
+# How it works
+View comments in the following files to see how everything works
+- ```flaskapp.py```
+- ```kerasModel.py```
+- ```index.html```
 
 # How to run
 ## Application:
