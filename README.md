@@ -57,10 +57,12 @@ View comments in the following files to see how everything works
     - ``` jupyter lab ```
 
 
-# References
+# References & Research
 ## Flask App:
 - Simple flask server:
     - http://flask.palletsprojects.com/en/1.1.x/quickstart/#a-minimal-application
+- Fix issue with CORS:
+    - https://stackoverflow.com/a/28339918
 - Return a static page:
     - http://flask.palletsprojects.com/en/1.1.x/quickstart/#static-files
 - Regular Expression Documentation:
