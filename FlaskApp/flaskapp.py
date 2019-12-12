@@ -9,8 +9,11 @@ import base64
 from keras.models import load_model
 import io
 from io import BytesIO
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+#FROM: https://stackoverflow.com/a/28339918
+cors = CORS(app, resources={r"/": {"origins": "http://localhost:5000"}})
 
 #GET request: When 127.0.0.1:5000 is entered into the URL this method returns the index.html file.
 @app.route("/")
@@ -19,6 +22,8 @@ def home():
 
 #POST request: When the user sends the image as a post request this method is run.
 @app.route('/', methods=['POST'])
+#FROM: https://stackoverflow.com/a/28339918
+@cross_origin(origin='localhost',headers=['Content- Type','Authorization']) 
 def getImage():
     
     #Retrieving Base64 image data

@@ -116,10 +116,9 @@
                     
                     $.post(server, {
                         "imageBase64": send_msg
-                    }, 
-                    function(data) {
-                        //alert(data)
-                        $("#prediction").empty().append(data);
+                    },function(data) {
+                        //alert(data);
+                    $("#prediction").append(data);
                     });
                    
                 });
